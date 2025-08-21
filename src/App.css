@@ -28,6 +28,11 @@
   --shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
+[data-theme="dark"] .hljs {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
 /* Reset and base styles */
 * {
   box-sizing: border-box;

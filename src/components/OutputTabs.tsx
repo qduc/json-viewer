@@ -5,7 +5,7 @@ import { downloadAsJson, downloadAsText } from '../utils/download';
 import hljs from 'highlight.js/lib/core';
 import jsonLang from 'highlight.js/lib/languages/json';
 import plaintext from 'highlight.js/lib/languages/plaintext';
-import 'highlight.js/styles/github.css';
+
 
 // Register only the languages we need to keep bundle size small
 hljs.registerLanguage('json', jsonLang);
