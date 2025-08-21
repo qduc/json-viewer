@@ -103,11 +103,11 @@ export default function OutputTabs({ inputText, indentSize }: OutputTabsProps) {
         </div>
         
         <div className="tab-actions">
-          <button onClick={handleCopy} title="Copy to clipboard">
-            📋 Copy
+          <button onClick={handleCopy} title="Copy to clipboard" className="action-btn">
+            Copy
           </button>
-          <button onClick={handleDownload} title="Download file">
-            💾 Download
+          <button onClick={handleDownload} title="Download file" className="action-btn">
+            Download
           </button>
         </div>
       </div>

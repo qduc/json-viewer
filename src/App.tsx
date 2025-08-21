@@ -215,39 +215,55 @@ function App() {
           
           <Panel defaultSize={50} minSize={30}>
             <div className="output-panel">
-              <div className="output-tabs-container">
-                <h3>Output</h3>
-                <OutputTabs 
-                  inputText={inputText}
-                  indentSize={settings.indentSize}
-                />
-              </div>
-              
-              <div className="tree-container">
-                <div className="tree-header">
-                  <h3>Tree View</h3>
-                  <div ref={searchBarRef}>
-                    <SearchBar
-                      searchText={searchText}
-                      onSearchChange={setSearchText}
-                      isRegex={isRegex}
-                      onRegexToggle={() => setIsRegex(!isRegex)}
-                      matchCount={matches.length}
-                      currentMatch={currentMatchIndex}
-                      onNextMatch={handleNextMatch}
-                      onPrevMatch={handlePrevMatch}
-                      onClear={() => setSearchText('')}
+              <PanelGroup direction="vertical" className="output-panel-group">
+                <Panel defaultSize={60} minSize={30} className="output-section">
+                  <div className="output-tabs-container">
+                    <div className="panel-header">
+                      <h3>Formatted Output</h3>
+                    </div>
+                    <OutputTabs 
+                      inputText={inputText}
+                      indentSize={settings.indentSize}
                     />
                   </div>
-                </div>
+                </Panel>
                 
-                {treeState && (
-                  <TreeView
-                    tree={treeState}
-                    onToggleExpand={handleToggleExpand}
-                  />
-                )}
-              </div>
+                <PanelResizeHandle className="output-panel-handle" />
+                
+                <Panel defaultSize={40} minSize={20} className="tree-section">
+                  <div className="tree-container">
+                    <div className="panel-header">
+                      <h3>Tree Explorer</h3>
+                      <div ref={searchBarRef}>
+                        <SearchBar
+                          searchText={searchText}
+                          onSearchChange={setSearchText}
+                          isRegex={isRegex}
+                          onRegexToggle={() => setIsRegex(!isRegex)}
+                          matchCount={matches.length}
+                          currentMatch={currentMatchIndex}
+                          onNextMatch={handleNextMatch}
+                          onPrevMatch={handlePrevMatch}
+                          onClear={() => setSearchText('')}
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="tree-content-wrapper">
+                      {treeState ? (
+                        <TreeView
+                          tree={treeState}
+                          onToggleExpand={handleToggleExpand}
+                        />
+                      ) : (
+                        <div className="tree-empty-state">
+                          <p>Enter valid JSON to see the tree structure</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </Panel>
+              </PanelGroup>
             </div>
           </Panel>
         </PanelGroup>

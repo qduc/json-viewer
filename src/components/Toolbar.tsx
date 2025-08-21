@@ -35,7 +35,6 @@ export default function Toolbar({
     if (file) {
       onFileUpload(file);
     }
-    // Reset input so same file can be selected again
     event.target.value = '';
   };
 
@@ -52,13 +51,14 @@ export default function Toolbar({
 
   return (
     <div className="toolbar">
-      <div className="toolbar-section">
+      {/* Primary Actions */}
+      <div className="toolbar-group toolbar-group-primary">
         <button 
           className="btn-primary" 
           onClick={onValidate}
           title="Validate JSON (Ctrl/Cmd + Enter)"
         >
-          ✓ Validate
+          Validate
         </button>
         
         <div className={`validation-status ${getValidationStatus()}`}>
@@ -74,25 +74,31 @@ export default function Toolbar({
         </div>
       </div>
 
-      <div className="toolbar-section">
-        <button 
-          onClick={onBeautify}
-          title="Beautify JSON (Ctrl/Cmd + Shift + B)"
-        >
-          🎨 Beautify
-        </button>
-        
-        <button 
-          onClick={onMinify}
-          title="Minify JSON (Ctrl/Cmd + Shift + M)"
-        >
-          📦 Minify
-        </button>
+      {/* Format Actions */}
+      <div className="toolbar-group">
+        <div className="toolbar-section">
+          <button 
+            onClick={onBeautify}
+            title="Format JSON with proper indentation (Ctrl/Cmd + Shift + B)"
+            className="btn-secondary"
+          >
+            Format
+          </button>
+          
+          <button 
+            onClick={onMinify}
+            title="Remove all whitespace and formatting (Ctrl/Cmd + Shift + M)"
+            className="btn-secondary"
+          >
+            Minify
+          </button>
+        </div>
         
         <select 
           value={indentSize} 
           onChange={(e) => onIndentSizeChange(Number(e.target.value))}
           title="Indentation size"
+          className="indent-select"
         >
           <option value={2}>2 spaces</option>
           <option value={4}>4 spaces</option>
@@ -100,55 +106,69 @@ export default function Toolbar({
         </select>
       </div>
 
-      <div className="toolbar-section">
-        <button 
-          onClick={onExpandAll}
-          title="Expand All (Ctrl/Cmd + Shift + K)"
-        >
-          📂 Expand All
-        </button>
-        
-        <button 
-          onClick={onCollapseAll}
-          title="Collapse All (Ctrl/Cmd + K)"
-        >
-          📁 Collapse All
-        </button>
+      {/* Tree Actions */}
+      <div className="toolbar-group">
+        <div className="toolbar-section">
+          <button 
+            onClick={onExpandAll}
+            title="Expand all nodes in tree view (Ctrl/Cmd + Shift + K)"
+            className="btn-outline"
+          >
+            Expand All
+          </button>
+          
+          <button 
+            onClick={onCollapseAll}
+            title="Collapse all nodes in tree view (Ctrl/Cmd + K)"
+            className="btn-outline"
+          >
+            Collapse All
+          </button>
+        </div>
         
         <select 
           onChange={(e) => onExpandToLevel(Number(e.target.value))}
-          title="Expand to level"
+          title="Expand tree to specific level"
           defaultValue=""
+          className="level-select"
         >
-          <option value="" disabled>Expand to level...</option>
-          <option value={0}>Level 0</option>
-          <option value={1}>Level 1</option>
-          <option value={2}>Level 2</option>
-          <option value={3}>Level 3</option>
-          <option value={4}>Level 4</option>
-          <option value={5}>Level 5</option>
+          <option value="" disabled>Level...</option>
+          <option value={0}>0</option>
+          <option value={1}>1</option>
+          <option value={2}>2</option>
+          <option value={3}>3</option>
+          <option value={4}>4</option>
+          <option value={5}>5</option>
         </select>
       </div>
 
-      <div className="toolbar-section">
-        <button 
-          onClick={onEscape}
-          title="Escape as JSON string"
-        >
-          ↗️ Escape
-        </button>
-        
-        <button 
-          onClick={onUnescape}
-          title="Unescape JSON string"
-        >
-          ↙️ Unescape
-        </button>
-      </div>
+      {/* Utility Actions */}
+      <div className="toolbar-group toolbar-group-secondary">
+        <details className="dropdown">
+          <summary className="dropdown-toggle" title="More tools">
+            More
+          </summary>
+          <div className="dropdown-menu">
+            <button 
+              onClick={onEscape}
+              title="Convert to escaped JSON string"
+              className="dropdown-item"
+            >
+              Escape String
+            </button>
+            
+            <button 
+              onClick={onUnescape}
+              title="Parse escaped JSON string"
+              className="dropdown-item"
+            >
+              Unescape String
+            </button>
+          </div>
+        </details>
 
-      <div className="toolbar-section">
         <label className="file-upload-btn">
-          📁 Upload
+          Upload File
           <input
             type="file"
             accept=".json,.txt"
