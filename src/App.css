@@ -184,11 +184,55 @@ body {
   font-weight: 600;
 }
 
+/* Editor and fallback styles */
 .editor-pane {
   flex: 1;
   border: 1px solid var(--border-color);
   border-radius: var(--radius);
   overflow: hidden;
+}
+
+.editor-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.fallback-editor {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.fallback-info {
+  background-color: var(--bg-secondary);
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+}
+
+.fallback-textarea {
+  flex: 1;
+  padding: 1rem;
+  border: none;
+  outline: none;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  resize: none;
+  line-height: 1.4;
+  tab-size: 2;
+}
+
+.fallback-error {
+  background-color: var(--error-color);
+  color: white;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  border-top: 1px solid var(--border-color);
 }
 
 /* Output panel */
