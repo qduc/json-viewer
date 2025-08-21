@@ -248,6 +248,7 @@ body {
   display: flex;
   flex-direction: column;
   margin-bottom: 1rem;
+  min-height: 0; /* Allow shrinking */
 }
 
 .output-tabs-container h3 {
@@ -261,6 +262,7 @@ body {
   display: flex;
   flex-direction: column;
   height: 100%;
+  min-height: 0; /* Allow shrinking */
 }
 
 .tab-header {
@@ -360,6 +362,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 0;
+  height: 0; /* Force height calculation */
 }
 
 .tree-header {
@@ -489,6 +492,8 @@ body {
   border-radius: var(--radius);
   overflow: auto;
   background-color: var(--bg-primary);
+  min-height: 0; /* Allow shrinking */
+  height: 100%; /* Take full available height */
 }
 
 .tree-view.empty {
@@ -508,6 +513,7 @@ body {
 
 .tree-content {
   padding: 0.5rem;
+  height: auto; /* Allow content to expand beyond container height */
 }
 
 /* Tree nodes */
