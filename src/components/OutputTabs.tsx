@@ -1,7 +1,15 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { beautifyJson, minifyJson, escapeJsonString, unescapeJsonString } from '../utils/json';
 import { copyToClipboard } from '../utils/storage';
 import { downloadAsJson, downloadAsText } from '../utils/download';
+import hljs from 'highlight.js/lib/core';
+import jsonLang from 'highlight.js/lib/languages/json';
+import plaintext from 'highlight.js/lib/languages/plaintext';
+import 'highlight.js/styles/github.css';
+
+// Register only the languages we need to keep bundle size small
+hljs.registerLanguage('json', jsonLang);
+hljs.registerLanguage('plaintext', plaintext);
 
 interface OutputTabsProps {
   inputText: string;
@@ -61,6 +69,23 @@ export default function OutputTabs({ inputText, indentSize }: OutputTabsProps) {
     { key: 'unescaped', label: 'Unescaped', description: 'Parse JSON string literal to raw text' }
   ];
 
+  const content = useMemo(() => getTabContent(), [activeTab, inputText, indentSize]);
+  const language: 'json' | 'plaintext' = useMemo(() => (
+    activeTab === 'beautified' || activeTab === 'minified' ? 'json' : 'plaintext'
+  ), [activeTab]);
+
+  const highlightedHtml = useMemo(() => {
+    try {
+      return hljs.highlight(content, { language }).value;
+    } catch {
+      // Fallback: basic escape to avoid breaking the UI if highlighting fails
+      return content
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+  }, [content, language]);
+
   return (
     <div className="output-tabs">
       <div className="tab-header">
@@ -89,7 +114,7 @@ export default function OutputTabs({ inputText, indentSize }: OutputTabsProps) {
       
       <div className="tab-content">
         <pre className={`output-content ${isError() ? 'error' : ''}`}>
-          {getTabContent()}
+          <code className={`hljs language-${language}`} dangerouslySetInnerHTML={{ __html: highlightedHtml }} />
         </pre>
       </div>
       
