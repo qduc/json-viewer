@@ -1,5 +1,6 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useCallback } from 'react';
 import Editor from '@monaco-editor/react';
+import type { OnMount } from '@monaco-editor/react';
 import type { ValidationResult } from '../utils/json';
 
 interface EditorPaneProps {
@@ -21,7 +22,7 @@ function FallbackEditor({ value, onChange, validation, fontSize }: EditorPanePro
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className="fallback-textarea"
-        style={{ 
+        style={{
           fontSize: `${fontSize}px`,
           fontFamily: 'Monaco, Menlo, "Ubuntu Mono", monospace'
         }}
@@ -37,15 +38,16 @@ function FallbackEditor({ value, onChange, validation, fontSize }: EditorPanePro
   );
 }
 
-export default function EditorPane({ 
-  value, 
-  onChange, 
-  validation, 
-  theme, 
+export default function EditorPane({
+  value,
+  onChange,
+  validation,
+  theme,
   fontSize,
-  onMount 
+  onMount
 }: EditorPaneProps) {
   const editorRef = useRef<any>(null);
+  const monacoRef = useRef<any>(null);
   const [monacoLoaded, setMonacoLoaded] = useState<boolean | null>(null);
   const timeoutRef = useRef<number | null>(null);
 
@@ -65,41 +67,37 @@ export default function EditorPane({
     };
   }, [monacoLoaded]);
 
+  // Update markers when validation changes
   useEffect(() => {
-    if (editorRef.current && validation && !validation.isValid && validation.error) {
-      const model = editorRef.current.getModel();
-      if (model && window.monaco) {
-        // Clear previous markers
-        window.monaco.editor.setModelMarkers(model, 'json-validation', []);
-        
-        // Add error marker
-        const { line, column, message } = validation.error;
-        window.monaco.editor.setModelMarkers(model, 'json-validation', [{
-          startLineNumber: line,
-          startColumn: column,
-          endLineNumber: line,
-          endColumn: column + 1,
-          message,
-          severity: window.monaco.MarkerSeverity.Error || 8
-        }]);
-      }
-    } else if (editorRef.current && validation?.isValid && window.monaco) {
-      // Clear markers when valid
-      const model = editorRef.current.getModel();
-      if (model) {
-        window.monaco.editor.setModelMarkers(model, 'json-validation', []);
-      }
+    if (!editorRef.current || !monacoRef.current) return;
+
+    const model = editorRef.current.getModel();
+    if (!model) return;
+
+    if (validation && !validation.isValid && validation.error) {
+      const { line, column, message } = validation.error;
+      monacoRef.current.editor.setModelMarkers(model, 'json-validation', [{
+        startLineNumber: line,
+        startColumn: column,
+        endLineNumber: line,
+        endColumn: column + 1,
+        message,
+        severity: monacoRef.current.MarkerSeverity?.Error ?? 8
+      }]);
+    } else {
+      monacoRef.current.editor.setModelMarkers(model, 'json-validation', []);
     }
   }, [validation]);
 
-  const handleEditorDidMount = (editor: any) => {
+  const handleEditorDidMount: OnMount = useCallback((editor, monaco) => {
     editorRef.current = editor;
+    monacoRef.current = monaco;
     setMonacoLoaded(true);
     if (timeoutRef.current) {
       window.clearTimeout(timeoutRef.current);
     }
     onMount?.(editor);
-  };
+  }, [onMount]);
 
   // Show fallback if Monaco failed to load
   if (monacoLoaded === false) {
@@ -113,7 +111,7 @@ export default function EditorPane({
         language="json"
         theme={theme === 'dark' ? 'vs-dark' : 'vs'}
         value={value}
-        onChange={(value) => onChange(value || '')}
+        onChange={(v) => onChange(v || '')}
         onMount={handleEditorDidMount}
         loading={<div className="editor-loading">Loading Monaco Editor...</div>}
         options={{
@@ -126,7 +124,9 @@ export default function EditorPane({
           folding: true,
           wordWrap: 'on',
           formatOnPaste: true,
-          formatOnType: true
+          formatOnType: true,
+          // keep aria and accessibility sensible
+          ariaLabel: 'JSON editor',
         }}
       />
     </div>
