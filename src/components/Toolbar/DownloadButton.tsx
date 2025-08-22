@@ -33,7 +33,15 @@ export default function DownloadButton({ value, disabled = false, className = ''
 
   return (
     <button
-      className={`btn ${saved ? 'btn-success' : 'btn-secondary'} ${className}`.trim()}
+      className={[
+        'px-3 py-1.5 border rounded transition-all text-sm font-medium whitespace-nowrap',
+        '[box-shadow:var(--shadow)] hover:[box-shadow:var(--shadow)] hover:-translate-y-px',
+        'disabled:opacity-50 disabled:cursor-not-allowed',
+        saved
+          ? 'bg-[var(--success-color)] text-white border-[var(--success-color)]'
+          : 'bg-[var(--bg-primary)] text-[var(--text-primary)] border-[var(--border-color)] hover:bg-[var(--bg-tertiary)]',
+        className,
+      ].join(' ').trim()}
       onClick={handleDownload}
       disabled={disabled}
       title={disabled ? 'Nothing to download' : 'Download formatted JSON as file'}

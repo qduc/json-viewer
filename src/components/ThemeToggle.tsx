@@ -45,12 +45,19 @@ export default function ThemeToggle({ theme, onThemeChange, effectiveTheme }: Th
 
   return (
     <button
-      className="theme-toggle"
+      className={[
+        'flex items-center gap-2',
+        'px-4 py-2 border border-border-color rounded',
+        'bg-bg-primary text-text-primary',
+        'transition-all text-sm font-medium whitespace-nowrap',
+        'hover:bg-bg-tertiary hover:-translate-y-px',
+        '[box-shadow:var(--shadow)] hover:[box-shadow:var(--shadow)]',
+      ].join(' ')}
       onClick={handleToggle}
       title={`Current theme: ${getLabel()}. Click to cycle.`}
     >
-      <span className="theme-icon">{getIcon()}</span>
-      <span className="theme-label">{getLabel()}</span>
+      <span aria-hidden="true">{getIcon()}</span>
+      <span>{getLabel()}</span>
     </button>
   );
 }

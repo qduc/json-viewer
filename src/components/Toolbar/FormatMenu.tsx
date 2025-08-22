@@ -45,19 +45,19 @@ export function FormatMenu({ value, onChange, onFormat }: FormatMenuProps) {
   }, []);
 
   return (
-    <div className="toolbar-group">
-      <details ref={detailsRef} className="dropdown">
-        <summary className="dropdown-toggle" title="Format JSON">
+    <div className="flex items-center gap-3">
+      <details ref={detailsRef} className="relative group">
+        <summary className="bg-[var(--bg-primary)] border border-[var(--border-color)] rounded px-4 py-2 text-sm cursor-pointer relative transition-all hover:bg-[var(--bg-tertiary)] group-open:bg-[var(--bg-tertiary)] group-open:rounded-b-none" title="Format JSON">
           Format: {selectedOption?.label}
+          <span className="ml-2 text-xs opacity-70" aria-hidden="true">▾</span>
         </summary>
-        <div className="dropdown-menu">
+        <div className="absolute top-full left-0 right-0 bg-[var(--bg-primary)] border border-[var(--border-color)] border-t-0 rounded-b shadow [z-index:1000] min-w-[160px]">
           {formatOptions.map((option) => (
             <button
               key={option.value}
-              className="dropdown-item"
+              className="block w-full px-4 py-3 text-left text-sm transition hover:bg-[var(--bg-secondary)] first:border-t first:border-[var(--border-color)] aria-pressed:true:bg-[var(--bg-tertiary)] aria-pressed:true:shadow-[inset_2px_0_0_0_var(--accent-color)]"
               onClick={() => {
                 onChange(option.value);
-                // Close the details dropdown explicitly
                 if (detailsRef.current) detailsRef.current.open = false;
               }}
               aria-pressed={value === option.value}
@@ -70,7 +70,7 @@ export function FormatMenu({ value, onChange, onFormat }: FormatMenuProps) {
       </details>
 
       <button
-        className="btn-primary"
+        className="px-4 py-2 border border-[var(--accent-color)] rounded bg-[var(--accent-color)] text-white font-semibold transition-all hover:opacity-90 hover:-translate-y-px [box-shadow:var(--shadow)] hover:[box-shadow:var(--shadow)]"
         onClick={onFormat}
         title="Apply selected formatting"
       >

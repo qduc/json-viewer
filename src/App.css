@@ -882,24 +882,7 @@
   background-color: var(--bg-tertiary);
 }
 
-/* Theme toggle */
-.theme-toggle {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius);
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: var(--shadow);
-}
-
-.theme-toggle:hover {
-  background-color: var(--bg-tertiary);
-}
+/* Theme toggle migrated to Tailwind utilities in ThemeToggle.tsx */
 
 /* Responsive design */
 @media (max-width: 1024px) {

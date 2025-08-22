@@ -177,7 +177,7 @@ function App() {
           {/* Main split: left is Editor, right is contextual Output / Tree */}
           <SplitPane>
             {/* Left: Editor */}
-            <section className="editor-panel">
+            <section className="flex flex-col h-full">
               <h3>Editor</h3>
 
               {/* Basic Toolbar container (Task 5) */}
@@ -200,27 +200,27 @@ function App() {
               />
 
               {/* Validation status and inline errors */}
-              <div style={{ marginTop: 8, fontSize: 12, color: 'var(--text-secondary)' }}>
+              <div className="mt-2 text-xs" style={{ color: 'var(--text-secondary)' }}>
                 {validation.valid ? 'Valid JSON' : 'Invalid JSON'} • {validation.lineCount} lines
               </div>
 
               {/* Inline validation errors */}
               {!validation.valid && validation.errors.length > 0 && (
-                <ValidationErrors errors={validation.errors} className="editor-validation-errors" />
+                <ValidationErrors errors={validation.errors} className="mt-2" />
               )}
             </section>
 
             {/* Right: Output or Tree (contextual) */}
-            <section className="output-panel">
-              <div className="panel-header">
+            <section className="flex flex-col h-full">
+              <div className="flex items-center justify-between mb-3">
                 <h3>{viewMode === 'editor' ? 'Output' : 'Tree View'}</h3>
 
                 {/* When in tree view, show tree controls inside a toolbar in the right pane */}
                 {viewMode === 'tree' && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div className="flex items-center gap-2">
                     <Toolbar>
                       <TreeControls onExpandAll={handleExpandAll} onCollapseAll={handleCollapseAll} />
-                      <div style={{ flex: 1 }}>
+                      <div className="flex-1">
                         <SimpleSearch value={searchText} onChange={setSearchText} />
                       </div>
                     </Toolbar>
@@ -228,11 +228,11 @@ function App() {
                 )}
               </div>
 
-              <div className="output-tabs-container">
+              <div className="flex-1 flex flex-col min-h-0">
                 {viewMode === 'editor' ? (
                   <OutputTabs inputText={text} indentSize={formatType === 'tabs' ? '\t' : formatType === '4-spaces' ? 4 : 2} />
                 ) : (
-                  <div className="tree-content-wrapper">
+                  <div className="flex-1 flex flex-col min-h-0">
                     <TreeView
                       tree={filteredTree}
                       onToggleExpand={handleToggleExpand}

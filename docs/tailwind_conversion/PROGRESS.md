@@ -4,8 +4,8 @@
 **Phase:** Phase 2 (Core Component Conversion)
 **Active Area:** Ready to convert components
 **Current Branch:** feature/simplified-ui
-**Last Updated:** 2025-08-22 17:45
-**Next AI Should:** Begin Phase 3 (Advanced Features) - Task 3.1 (Theme System Conversion)
+**Last Updated:** 2025-08-22 16:45
+**Next AI Should:** Enhance Tree a11y (focus-visible, keyboard) and start Phase 3
 
 References:
 - Plan: `docs/tailwind_conversion/tailwind-conversion-plan.md`
@@ -115,6 +115,35 @@ Legend:
     - Dev server and production build both work correctly
     - CSS bundle size remains reasonable with Monaco styles preserved
 
+## Component Tailwind Audit (src/components)
+- Converted:
+  - `EditorPane.tsx`
+  - `Layout/ViewSwitcher.tsx`
+  - `TopBar/StatusPill.tsx`
+  - `TopBar/ValidationError.tsx`
+  - `OutputTabs.tsx`
+  - `SearchBar.tsx`
+  - `ThemeToggle.tsx`
+  - `Toolbar.tsx` (root)
+  - `Toolbar/Toolbar.tsx` (wrapper)
+  - `Toolbar/CopyButton.tsx`
+  - `Toolbar/DownloadButton.tsx`
+  - `Toolbar/FormatMenu.tsx`
+- Partially Converted:
+  - `Layout/SplitPane.tsx` (container uses Tailwind; keeps `panel-handle` CSS)
+- Not Converted (uses bespoke CSS classes, see `src/App.css`):
+  - (All core TreeView components converted in this session)
+ 
+Converted this session:
+  - `Tree/SimpleSearch.tsx` (replaced `.simple-search`, `.input`, `.btn` with Tailwind utilities)
+  - `Tree/TreeControls.tsx` (replaced `.tree-controls`, `.btn` with Tailwind utilities)
+  - `Tree/TreeView.tsx` (migrated `.tree-*` classes to Tailwind; preserved a11y/keyboard nav and highlight state)
+  - `TreeView.tsx` (root) (migrated `.tree-*` classes to Tailwind; preserved hover/active and action buttons)
+
+Notes:
+- Many of the above map to selectors implemented in `src/App.css` (e.g., `.output-tabs`, `.tab-*`, `.toolbar`, `.btn*`, `.tree-*`). When converting, replace with Tailwind utilities and remove unused CSS selectively.
+- Components already using Tailwind also reference CSS variables (e.g., `bg-bg-primary`, `border-border-color`) configured in the theme; keep using these tokens during conversion.
+
 ### Phase 3: Advanced Features (Day 4)
 - [ ] 3.1 Theme System
   - Convert dark/light implementations using Tailwind dark mode; keep switching logic
@@ -155,6 +184,19 @@ Legend:
 
 ## Current Working Notes
 Tailwind CSS setup is complete. See `docs/tailwind_conversion/tailwind-setup-complete.md` for details.
+  
+Session result (this AI):
+  - Converted `ThemeToggle.tsx` to Tailwind utilities.
+  - Removed old `.theme-toggle` CSS from `src/App.css`.
+  - Converted `Toolbar.tsx` (root) to Tailwind utilities:
+    - Replaced `.toolbar`, `.toolbar-group*`, `.btn-*`, `.dropdown*`, `.file-upload-btn`, and `.validation-status*` with Tailwind equivalents using CSS variables via arbitrary values.
+    - Preserved hover/active states, separator rules, and a11y (`aria-live`, `aria-pressed`).
+    - No behavior changes; kept existing markup and logic.
+  - Converted `Toolbar/Toolbar.tsx` wrapper to Tailwind (same container utilities as root toolbar).
+  - Converted Toolbar subcomponents:
+    - `CopyButton.tsx`: Tailwind for secondary/success states; disabled styling preserved.
+    - `DownloadButton.tsx`: Tailwind for secondary/success states; disabled styling preserved.
+    - `FormatMenu.tsx`: Tailwind dropdown with group-open styles; primary action uses accent styling.
 
 ## Files To Touch (anticipated)
 - `tailwind.config.js`, `postcss.config.js`

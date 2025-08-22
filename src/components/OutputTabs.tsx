@@ -88,13 +88,13 @@ export default function OutputTabs({ inputText, indentSize }: OutputTabsProps) {
   }, [content, language]);
 
   return (
-    <div className="output-tabs">
-      <div className="tab-header">
-        <div className="tab-buttons">
+    <div className="flex flex-col h-full min-h-0">
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex gap-1">
           {tabs.map(tab => (
             <button
               key={tab.key}
-              className={`tab-button ${activeTab === tab.key ? 'active' : ''}`}
+              className={`px-3 py-2 border border-border-color bg-bg-secondary text-text-primary cursor-pointer rounded-t transition-all hover:bg-bg-tertiary ${activeTab === tab.key ? 'bg-bg-primary border-b-transparent [box-shadow:inset_0_-2px_0_0_var(--accent-color)]' : ''}`}
               onClick={() => setActiveTab(tab.key)}
               title={tab.description}
             >
@@ -103,24 +103,24 @@ export default function OutputTabs({ inputText, indentSize }: OutputTabsProps) {
           ))}
         </div>
 
-        <div className="tab-actions">
-          <button onClick={handleCopy} title="Copy to clipboard" className="action-btn">
+        <div className="flex items-center gap-2">
+          <button onClick={handleCopy} title="Copy to clipboard" className="px-3 py-2 border border-border-color rounded bg-bg-primary text-text-primary transition-all text-sm font-medium whitespace-nowrap hover:bg-bg-tertiary hover:-translate-y-px [box-shadow:var(--shadow)] hover:[box-shadow:var(--shadow)]">
             Copy
           </button>
-          <button onClick={handleDownload} title="Download file" className="action-btn">
+          <button onClick={handleDownload} title="Download file" className="px-3 py-2 border border-border-color rounded bg-bg-primary text-text-primary transition-all text-sm font-medium whitespace-nowrap hover:bg-bg-tertiary hover:-translate-y-px [box-shadow:var(--shadow)] hover:[box-shadow:var(--shadow)]">
             Download
           </button>
         </div>
       </div>
 
-      <div className="tab-content">
-        <pre className={`output-content ${isError() ? 'error' : ''}`}>
+      <div className="flex-1 border border-border-color rounded rounded-tl-none overflow-hidden">
+        <pre className={`h-full p-4 m-0 font-mono text-sm leading-snug bg-bg-primary text-text-primary overflow-auto whitespace-pre-wrap break-all ${isError() ? 'text-[var(--error-color)]' : ''}`}>
           <code className={`hljs language-${language}`} dangerouslySetInnerHTML={{ __html: highlightedHtml }} />
         </pre>
       </div>
 
       {activeTab === 'unescaped' && (
-        <div className="tab-help">
+        <div className="mt-2 p-3 bg-bg-secondary rounded text-sm text-text-secondary">
           <p>
             <strong>Unescape:</strong> Converts a JSON string literal (wrapped in quotes) back to raw text.
             <br />
@@ -130,7 +130,7 @@ export default function OutputTabs({ inputText, indentSize }: OutputTabsProps) {
       )}
 
       {activeTab === 'escaped' && (
-        <div className="tab-help">
+        <div className="mt-2 p-3 bg-bg-secondary rounded text-sm text-text-secondary">
           <p>
             <strong>Escape:</strong> Converts text into a JSON string literal with proper escaping.
             <br />

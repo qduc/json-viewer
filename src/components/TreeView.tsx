@@ -50,16 +50,16 @@ function TreeNodeComponent({ node, onToggleExpand, level }: TreeNodeProps) {
   };
 
   return (
-    <div className="tree-node">
+    <div>
       <div
-        className={`tree-node-content ${node.matchesFilter ? 'highlighted' : ''}`}
+        className={`group flex items-center gap-2 px-2 py-1 text-sm leading-snug rounded transition-colors relative ${node.matchesFilter ? 'bg-[rgba(255,193,7,0.25)] text-[var(--text-primary)]' : 'hover:bg-[var(--bg-secondary)]'} focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent-color)] focus-visible:outline-offset-[-2px] focus-visible:bg-[var(--bg-secondary)]`}
         style={{ paddingLeft: indent }}
         onMouseEnter={() => setShowActions(true)}
         onMouseLeave={() => setShowActions(false)}
       >
         {hasChildren && (
           <button
-            className="expand-button"
+            className="w-4 h-4 border-0 bg-transparent cursor-pointer flex items-center justify-center text-[0.75rem] text-[var(--text-secondary)] hover:text-[var(--accent-color)]"
             onClick={() => onToggleExpand(node.path)}
             aria-label={node.isExpanded ? 'Collapse' : 'Expand'}
           >
@@ -67,26 +67,26 @@ function TreeNodeComponent({ node, onToggleExpand, level }: TreeNodeProps) {
           </button>
         )}
 
-        <span className="type-icon" title={node.type}>
+        <span className="w-5 h-4 flex items-center justify-center text-[0.75rem] font-bold bg-[var(--bg-tertiary)] rounded-[2px] text-[var(--text-secondary)]" title={node.type}>
           {getTypeIcon()}
         </span>
 
-        <span className="node-key">{node.key}:</span>
-        <span className="node-summary" title={summary}>
+        <span className="font-semibold text-[var(--accent-color)]">{node.key}:</span>
+        <span className="text-[var(--text-primary)] flex-1 overflow-hidden text-ellipsis whitespace-nowrap" title={summary}>
           {summary}
         </span>
 
         {showActions && (
-          <div className="node-actions">
-            <button onClick={handleCopyValue} title="Copy value">📋</button>
-            <button onClick={handleCopyKey} title="Copy key">🔑</button>
-            <button onClick={handleCopyPath} title="Copy JSONPath">📍</button>
+          <div className="flex gap-1">
+            <button className="p-1 bg-transparent border-0 cursor-pointer rounded-[2px] text-[0.75rem] hover:bg-[var(--bg-tertiary)]" onClick={handleCopyValue} title="Copy value">📋</button>
+            <button className="p-1 bg-transparent border-0 cursor-pointer rounded-[2px] text-[0.75rem] hover:bg-[var(--bg-tertiary)]" onClick={handleCopyKey} title="Copy key">🔑</button>
+            <button className="p-1 bg-transparent border-0 cursor-pointer rounded-[2px] text-[0.75rem] hover:bg-[var(--bg-tertiary)]" onClick={handleCopyPath} title="Copy JSONPath">📍</button>
           </div>
         )}
       </div>
 
       {hasChildren && node.isExpanded && (
-        <div className="tree-children">
+        <div>
           {node.children!.map((child, index) => (
             <TreeNodeComponent
               key={`${child.key}-${index}`}
@@ -116,18 +116,18 @@ export default function TreeView({ tree, onToggleExpand }: TreeViewProps) {
 
   if (!tree) {
     return (
-      <div className="tree-view empty">
-        <p>No valid JSON to display</p>
+      <div className="flex-1 border border-[var(--border-color)] rounded overflow-auto bg-[var(--bg-primary)] min-h-0 h-full flex items-center justify-center text-[var(--text-secondary)]">
+        <p className="m-0">No valid JSON to display</p>
       </div>
     );
   }
 
   return (
-    <div className="tree-view" role="tree">
-      <div className="tree-header">
-        <span className="node-count">{nodeCount} nodes</span>
+    <div className="flex-1 border border-[var(--border-color)] rounded overflow-auto bg-[var(--bg-primary)] min-h-0 h-full" role="tree">
+      <div className="px-4 py-2 bg-[var(--bg-secondary)] border-b border-[var(--border-color)] text-sm text-[var(--text-secondary)]">
+        <span>{nodeCount} nodes</span>
       </div>
-      <div className="tree-content">
+      <div className="p-2">
         <TreeNodeComponent
           node={tree}
           onToggleExpand={onToggleExpand}
