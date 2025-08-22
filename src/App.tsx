@@ -175,73 +175,74 @@ function App() {
 
       <main className="app-main">
         <div style={{ padding: '0.75rem', height: '100%' }}>
-          {viewMode === 'editor' ? (
-            /* Editor View */
-            <SplitPane>
-              {/* Left: Editor */}
-              <section className="editor-panel">
-                <h3>Editor</h3>
+          {/* Main split: left is Editor, right is contextual Output / Tree */}
+          <SplitPane>
+            {/* Left: Editor */}
+            <section className="editor-panel">
+              <h3>Editor</h3>
 
-                {/* Basic Toolbar container (Task 5) */}
-                <Toolbar>
-                  <FormatMenu
-                    value={formatType}
-                    onChange={setFormatType}
-                    onFormat={handleFormat}
-                  />
-                  <CopyButton value={formattedForCopy} disabled={copyDisabled} />
-                  <DownloadButton value={formattedForCopy} disabled={copyDisabled} />
-                </Toolbar>
-
-                <EditorPane
-                  value={text}
-                  onChange={setText}
-                  validation={validation.result}
-                  theme={effectiveTheme}
-                  fontSize={14}
+              {/* Basic Toolbar container (Task 5) */}
+              <Toolbar>
+                <FormatMenu
+                  value={formatType}
+                  onChange={setFormatType}
+                  onFormat={handleFormat}
                 />
+                <CopyButton value={formattedForCopy} disabled={copyDisabled} />
+                <DownloadButton value={formattedForCopy} disabled={copyDisabled} />
+              </Toolbar>
 
-                {/* Validation status and inline errors */}
-                <div style={{ marginTop: 8, fontSize: 12, color: 'var(--text-secondary)' }}>
-                  {validation.valid ? 'Valid JSON' : 'Invalid JSON'} • {validation.lineCount} lines
-                </div>
+              <EditorPane
+                value={text}
+                onChange={setText}
+                validation={validation.result}
+                theme={effectiveTheme}
+                fontSize={14}
+              />
 
-                {/* Inline validation errors */}
-                {!validation.valid && validation.errors.length > 0 && (
-                  <ValidationErrors errors={validation.errors} className="editor-validation-errors" />
-                )}
-              </section>
-
-              {/* Right: Output panel */}
-              <section className="output-panel">
-                <div className="panel-header">
-                  <h3>Output</h3>
-                </div>
-                <div className="output-tabs-container">
-                  <OutputTabs inputText={text} indentSize={formatType === 'tabs' ? '\t' : formatType === '4-spaces' ? 4 : 2} />
-                </div>
-              </section>
-            </SplitPane>
-          ) : (
-            /* Tree View */
-            <section className="tree-container">
-              <div className="panel-header">
-                <h3>Tree View</h3>
+              {/* Validation status and inline errors */}
+              <div style={{ marginTop: 8, fontSize: 12, color: 'var(--text-secondary)' }}>
+                {validation.valid ? 'Valid JSON' : 'Invalid JSON'} • {validation.lineCount} lines
               </div>
-              <div className="tree-content-wrapper">
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                  <TreeControls onExpandAll={handleExpandAll} onCollapseAll={handleCollapseAll} />
-                  <div style={{ flex: 1 }}>
-                    <SimpleSearch value={searchText} onChange={setSearchText} />
+
+              {/* Inline validation errors */}
+              {!validation.valid && validation.errors.length > 0 && (
+                <ValidationErrors errors={validation.errors} className="editor-validation-errors" />
+              )}
+            </section>
+
+            {/* Right: Output or Tree (contextual) */}
+            <section className="output-panel">
+              <div className="panel-header">
+                <h3>{viewMode === 'editor' ? 'Output' : 'Tree View'}</h3>
+
+                {/* When in tree view, show tree controls inside a toolbar in the right pane */}
+                {viewMode === 'tree' && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <Toolbar>
+                      <TreeControls onExpandAll={handleExpandAll} onCollapseAll={handleCollapseAll} />
+                      <div style={{ flex: 1 }}>
+                        <SimpleSearch value={searchText} onChange={setSearchText} />
+                      </div>
+                    </Toolbar>
                   </div>
-                </div>
-                <TreeView
-                  tree={filteredTree}
-                  onToggleExpand={handleToggleExpand}
-                />
+                )}
+              </div>
+
+              <div className="output-tabs-container">
+                {viewMode === 'editor' ? (
+                  <OutputTabs inputText={text} indentSize={formatType === 'tabs' ? '\t' : formatType === '4-spaces' ? 4 : 2} />
+                ) : (
+                  <div className="tree-content-wrapper">
+                    <TreeView
+                      tree={filteredTree}
+                      onToggleExpand={handleToggleExpand}
+                    />
+                  </div>
+                )}
               </div>
             </section>
-          )}
+          </SplitPane>
         </div>
       </main>
     </div>
