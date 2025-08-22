@@ -22,7 +22,7 @@ export function validateJson(text: string): ValidationResult {
   } catch (error) {
     const match = (error as Error).message.match(/at position (\d+)/);
     const position = match ? parseInt(match[1], 10) : 0;
-    
+
     const lines = text.substring(0, position).split('\n');
     const line = lines.length;
     const column = lines[lines.length - 1].length + 1;
@@ -39,10 +39,12 @@ export function validateJson(text: string): ValidationResult {
   }
 }
 
-export function beautifyJson(text: string, indent: number = 2): string {
+export function beautifyJson(text: string, indent: number | string = 2): string {
   try {
     const parsed = JSON.parse(text);
-    return JSON.stringify(parsed, null, indent);
+    // If indent is a string (e.g. '\t'), pass it through; otherwise ensure it's a number
+    const space = typeof indent === 'string' ? indent : indent;
+    return JSON.stringify(parsed, null, space as any);
   } catch {
     return text;
   }

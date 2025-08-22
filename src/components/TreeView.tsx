@@ -4,7 +4,7 @@ import { getNodeSummary } from '../utils/tree';
 import { copyToClipboard } from '../utils/storage';
 
 interface TreeViewProps {
-  tree: TreeNode;
+  tree: TreeNode | null;
   onToggleExpand: (path: string[]) => void;
 }
 
@@ -51,7 +51,7 @@ function TreeNodeComponent({ node, onToggleExpand, level }: TreeNodeProps) {
 
   return (
     <div className="tree-node">
-      <div 
+      <div
         className={`tree-node-content ${node.matchesFilter ? 'highlighted' : ''}`}
         style={{ paddingLeft: indent }}
         onMouseEnter={() => setShowActions(true)}
@@ -66,16 +66,16 @@ function TreeNodeComponent({ node, onToggleExpand, level }: TreeNodeProps) {
             {node.isExpanded ? '▼' : '▶'}
           </button>
         )}
-        
+
         <span className="type-icon" title={node.type}>
           {getTypeIcon()}
         </span>
-        
+
         <span className="node-key">{node.key}:</span>
         <span className="node-summary" title={summary}>
           {summary}
         </span>
-        
+
         {showActions && (
           <div className="node-actions">
             <button onClick={handleCopyValue} title="Copy value">📋</button>
@@ -84,7 +84,7 @@ function TreeNodeComponent({ node, onToggleExpand, level }: TreeNodeProps) {
           </div>
         )}
       </div>
-      
+
       {hasChildren && node.isExpanded && (
         <div className="tree-children">
           {node.children!.map((child, index) => (
@@ -103,6 +103,7 @@ function TreeNodeComponent({ node, onToggleExpand, level }: TreeNodeProps) {
 
 export default function TreeView({ tree, onToggleExpand }: TreeViewProps) {
   const nodeCount = useMemo(() => {
+    if (!tree) return 0;
     const count = (node: TreeNode): number => {
       let total = 1;
       if (node.children) {

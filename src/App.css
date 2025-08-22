@@ -12,6 +12,7 @@
   --warning-color: #ffc107;
   --shadow: 0 2px 4px rgba(0,0,0,0.1);
   --radius: 4px;
+  --radius-lg: 8px;
 }
 
 [data-theme="dark"] {
@@ -44,6 +45,8 @@ body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   transition: background-color 0.2s, color 0.2s;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* App layout */
@@ -58,9 +61,10 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 0.5rem 1.5rem;
-  background-color: var(--bg-secondary);
+  background: linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0)) , var(--bg-secondary);
   border-bottom: 1px solid var(--border-color);
   min-height: 48px;
+  box-shadow: var(--shadow);
 }
 
 .app-header h1 {
@@ -170,6 +174,45 @@ body {
   border-color: var(--border-color);
 }
 
+/* Base button class and success state for toolbar actions */
+.btn {
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.btn:hover {
+  background-color: var(--bg-tertiary);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.btn:disabled,
+.btn[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-success {
+  background-color: var(--success-color) !important;
+  color: #fff !important;
+  border-color: var(--success-color) !important;
+}
+
+/* Toggle-like pressed state for secondary buttons */
+.btn-secondary[aria-pressed="true"] {
+  background-color: var(--bg-tertiary);
+  border-color: var(--accent-color);
+  box-shadow: inset 0 0 0 1px var(--accent-color);
+}
+
 .btn-outline {
   background-color: transparent;
   color: var(--text-secondary);
@@ -253,12 +296,21 @@ body {
   border-top: 1px solid var(--border-color);
 }
 
+.dropdown-item[aria-pressed="true"] {
+  background-color: var(--bg-tertiary);
+  box-shadow: inset 2px 0 0 0 var(--accent-color);
+}
+
 /* Validation status */
 .validation-status {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   font-size: 0.875rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-primary);
 }
 
 .status-indicator {
@@ -272,13 +324,57 @@ body {
   background-color: var(--success-color);
 }
 
+.validation-status.valid {
+  border-color: var(--success-color);
+}
+
 .validation-status.invalid .status-indicator {
   background-color: var(--error-color);
+}
+
+.validation-status.invalid {
+  border-color: var(--error-color);
 }
 
 .error-location {
   color: var(--error-color);
   font-size: 0.75rem;
+}
+
+/* Inline validation errors */
+.validation-errors {
+  margin-top: 0.5rem;
+}
+
+.validation-error {
+  background-color: var(--error-color);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+  border-left: 4px solid rgba(255, 255, 255, 0.3);
+}
+
+.validation-error:last-child {
+  margin-bottom: 0;
+}
+
+.validation-error .error-message {
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.validation-error .error-location {
+  font-size: 0.75rem;
+  opacity: 0.9;
+  color: inherit;
+}
+
+.editor-validation-errors {
+  margin-top: 0.5rem;
+  border-radius: var(--radius);
+  overflow: hidden;
 }
 
 /* File upload */
@@ -306,10 +402,30 @@ body {
   background-color: var(--border-color);
   cursor: col-resize;
   transition: background-color 0.2s;
+  position: relative;
 }
 
 .panel-handle:hover {
   background-color: var(--accent-color);
+}
+
+.panel-handle::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 2px;
+  height: 24px;
+  border-radius: 1px;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0) 0%,
+    rgba(0,0,0,0.2) 20%,
+    rgba(0,0,0,0.2) 80%,
+    rgba(0,0,0,0) 100%
+  );
+  opacity: 0.4;
 }
 
 /* Editor panel */
@@ -421,6 +537,7 @@ body {
   color: var(--text-primary);
   flex-shrink: 0;
   line-height: 1.3;
+  letter-spacing: 0.2px;
 }
 
 .output-panel-handle {
@@ -483,6 +600,7 @@ body {
 .tab-button.active {
   background-color: var(--bg-primary);
   border-bottom-color: var(--bg-primary);
+  box-shadow: 0 -2px 0 0 var(--accent-color) inset;
 }
 
 .tab-actions {
@@ -742,8 +860,8 @@ body {
 }
 
 .tree-node-content.highlighted {
-  background-color: var(--warning-color);
-  color: #000;
+  background-color: rgba(255, 193, 7, 0.25);
+  color: var(--text-primary);
 }
 
 .expand-button {
@@ -825,6 +943,7 @@ body {
   color: var(--text-primary);
   cursor: pointer;
   transition: all 0.2s;
+  box-shadow: var(--shadow);
 }
 
 .theme-toggle:hover {

@@ -13,7 +13,8 @@ hljs.registerLanguage('plaintext', plaintext);
 
 interface OutputTabsProps {
   inputText: string;
-  indentSize: number;
+  // Accept either a numeric indent (spaces) or a string (e.g. '\t' for tabs)
+  indentSize: number | string;
 }
 
 type TabType = 'beautified' | 'minified' | 'escaped' | 'unescaped';
@@ -54,7 +55,7 @@ export default function OutputTabs({ inputText, indentSize }: OutputTabsProps) {
   const handleDownload = () => {
     const content = getTabContent();
     const timestamp = new Date().toISOString().split('T')[0];
-    
+
     if (activeTab === 'escaped' || activeTab === 'unescaped') {
       downloadAsText(content, `json-${activeTab}-${timestamp}.txt`);
     } else {
@@ -101,7 +102,7 @@ export default function OutputTabs({ inputText, indentSize }: OutputTabsProps) {
             </button>
           ))}
         </div>
-        
+
         <div className="tab-actions">
           <button onClick={handleCopy} title="Copy to clipboard" className="action-btn">
             Copy
@@ -111,13 +112,13 @@ export default function OutputTabs({ inputText, indentSize }: OutputTabsProps) {
           </button>
         </div>
       </div>
-      
+
       <div className="tab-content">
         <pre className={`output-content ${isError() ? 'error' : ''}`}>
           <code className={`hljs language-${language}`} dangerouslySetInnerHTML={{ __html: highlightedHtml }} />
         </pre>
       </div>
-      
+
       {activeTab === 'unescaped' && (
         <div className="tab-help">
           <p>
@@ -127,7 +128,7 @@ export default function OutputTabs({ inputText, indentSize }: OutputTabsProps) {
           </p>
         </div>
       )}
-      
+
       {activeTab === 'escaped' && (
         <div className="tab-help">
           <p>
