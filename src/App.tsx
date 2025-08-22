@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react';
-import './App.css';
 import { SplitPane } from './components/Layout/SplitPane';
 import EditorPane from './components/EditorPane';
 import { ViewSwitcher } from './components/Layout/ViewSwitcher';
@@ -149,22 +148,22 @@ function App() {
   const copyDisabled = !validation.valid || text.trim().length === 0;
 
   return (
-    <div className="app">
-      <header className="app-header">
-        <h1>🧩 JSON Viewer</h1>
+    <div className="h-screen flex flex-col">
+      <header className="flex justify-between items-center px-6 py-2 min-h-[48px]" style={{ background: 'linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0)), var(--bg-secondary)', borderBottom: '1px solid var(--border-color)', boxShadow: 'var(--shadow)' }}>
+        <h1 className="m-0 text-xl font-semibold leading-tight">🧩 JSON Viewer</h1>
         {/* ViewSwitcher (Task 3) */}
-        <div className="toolbar-section" aria-label="View switcher">
-          <span style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>View:</span>
+        <div className="flex items-center gap-2" aria-label="View switcher">
+          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>View:</span>
           <ViewSwitcher value={viewMode} onChange={setViewMode} />
         </div>
 
         {/* Status indicator (Task 4) */}
-        <div className="toolbar-section" aria-label="Validation status">
+        <div className="flex items-center gap-2" aria-label="Validation status">
           <StatusPill validation={validation.result} />
         </div>
 
         {/* Theme toggle */}
-        <div className="toolbar-section" aria-label="Theme toggle">
+        <div className="flex items-center gap-2" aria-label="Theme toggle">
           <ThemeToggle
             theme={settings.theme}
             onThemeChange={(t) => updateSettings({ theme: t })}
@@ -173,8 +172,8 @@ function App() {
         </div>
       </header>
 
-      <main className="app-main">
-        <div style={{ padding: '0.75rem', height: '100%' }}>
+      <main className="flex-1 flex flex-col overflow-hidden">
+        <div className="p-3 h-full">
           {/* Main split: left is Editor, right is contextual Output / Tree */}
           <SplitPane>
             {/* Left: Editor */}

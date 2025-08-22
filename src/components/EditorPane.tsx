@@ -14,23 +14,24 @@ interface EditorPaneProps {
 
 function FallbackEditor({ value, onChange, validation, fontSize }: EditorPaneProps) {
   return (
-    <div className="fallback-editor">
-      <div className="fallback-info">
+    <div className="h-full flex flex-col">
+      <div className="bg-bg-secondary px-4 py-2 border-b border-border-color text-text-secondary text-xs">
         <small>Using fallback editor (Monaco Editor failed to load)</small>
       </div>
       <textarea
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="fallback-textarea"
+        className="flex-1 p-4 border-none outline-none bg-bg-primary text-text-primary resize-none leading-relaxed"
         style={{
           fontSize: `${fontSize}px`,
-          fontFamily: 'Monaco, Menlo, "Ubuntu Mono", monospace'
+          fontFamily: 'Monaco, Menlo, "Ubuntu Mono", monospace',
+          tabSize: 2
         }}
         placeholder="Enter JSON here..."
         spellCheck={false}
       />
       {validation && !validation.isValid && validation.error && (
-        <div className="fallback-error">
+        <div className="bg-error-color text-white px-4 py-2 text-sm border-t border-border-color">
           Error at line {validation.error.line}, column {validation.error.column}: {validation.error.message}
         </div>
       )}
@@ -105,7 +106,7 @@ export default function EditorPane({
   }
 
   return (
-    <div className="editor-pane" style={{ height: '100%' }}>
+    <div className="flex-1 border border-border-color rounded overflow-hidden" style={{ height: '100%' }}>
       <Editor
         height="100%"
         language="json"
@@ -113,7 +114,7 @@ export default function EditorPane({
         value={value}
         onChange={(v) => onChange(v || '')}
         onMount={handleEditorDidMount}
-        loading={<div className="editor-loading">Loading Monaco Editor...</div>}
+        loading={<div className="flex items-center justify-center h-full text-text-secondary italic">Loading Monaco Editor...</div>}
         options={{
           fontSize,
           lineNumbers: 'on',

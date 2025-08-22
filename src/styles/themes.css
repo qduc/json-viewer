@@ -1,0 +1,38 @@
+/* CSS Custom Properties for Theme System */
+/* These work alongside Tailwind's theme configuration */
+
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --border-color: #dee2e6;
+  --accent-color: #0066cc;
+  --success-color: #28a745;
+  --error-color: #dc3545;
+  --warning-color: #ffc107;
+  --shadow: 0 2px 4px rgba(0,0,0,0.1);
+  --radius: 4px;
+  --radius-lg: 8px;
+}
+
+[data-theme="dark"] {
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-tertiary: #404040;
+  --text-primary: #e9ecef;
+  --text-secondary: #adb5bd;
+  --border-color: #404040;
+  --accent-color: #4dabf7;
+  --success-color: #51cf66;
+  --error-color: #ff6b6b;
+  --warning-color: #ffd43b;
+  --shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* Highlight.js theme integration */
+[data-theme="dark"] .hljs {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}

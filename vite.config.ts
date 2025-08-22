@@ -5,4 +5,5 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   base: "/json-viewer/",
   plugins: [react()],
+  // PostCSS configuration is automatically loaded from postcss.config.js
 })

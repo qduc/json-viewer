@@ -8,7 +8,7 @@ interface SplitPaneProps {
 
 export function SplitPane({ children }: SplitPaneProps) {
   return (
-    <PanelGroup direction="horizontal">
+    <PanelGroup direction="horizontal" className="flex-1">
       <Panel>{children[0]}</Panel>
       <PanelResizeHandle className="panel-handle" />
       <Panel>{children[1]}</Panel>

@@ -1,0 +1,33 @@
+/* Monaco Editor specific styles that should not be replaced by Tailwind */
+
+/* Monaco Editor theme integration */
+[data-theme="dark"] .monaco-editor .margin,
+[data-theme="dark"] .monaco-editor-background,
+[data-theme="dark"] .monaco-editor .inputarea.ime-input {
+  background-color: var(--bg-primary) !important;
+}
+
+[data-theme="dark"] .monaco-editor .view-lines,
+[data-theme="dark"] .monaco-editor .view-line {
+  color: var(--text-primary) !important;
+}
+
+/* Preserve Monaco's own styling for syntax highlighting */
+.monaco-editor .view-lines .view-line .mtk1 { color: inherit; }
+.monaco-editor .view-lines .view-line .mtk2 { color: inherit; }
+.monaco-editor .view-lines .view-line .mtk3 { color: inherit; }
+.monaco-editor .view-lines .view-line .mtk4 { color: inherit; }
+.monaco-editor .view-lines .view-line .mtk5 { color: inherit; }
+
+/* Ensure Monaco scrollbars work with theme */
+[data-theme="dark"] .monaco-scrollable-element .scrollbar {
+  background: var(--bg-secondary) !important;
+}
+
+[data-theme="dark"] .monaco-scrollable-element .slider {
+  background: var(--border-color) !important;
+}
+
+[data-theme="dark"] .monaco-scrollable-element .slider:hover {
+  background: var(--text-secondary) !important;
+}

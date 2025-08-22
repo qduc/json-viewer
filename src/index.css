@@ -1,1 +1,27 @@
-/* Global reset and base styles are handled in App.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Import theme system and Monaco styles */
+  @import './styles/themes.css';
+  @import './styles/monaco.css';
+
+  /* Base font smoothing and box-sizing */
+  * {
+    box-sizing: border-box;
+  }
+  
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background-color 0.2s, color 0.2s;
+  }
+}
