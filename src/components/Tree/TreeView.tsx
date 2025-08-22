@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, type MouseEvent } from 'react';
 
 // TreeNode interface as specified in requirements
 interface TreeNode {
@@ -148,6 +148,23 @@ function TreeNodeComponent({
     }
   };
 
+  const handleCopyValue = async (e: MouseEvent) => {
+    e.stopPropagation();
+    try {
+      let text: string;
+      if (node.type === 'object' || node.type === 'array') {
+        text = JSON.stringify(node.value, null, 2);
+      } else if (node.type === 'string') {
+        text = String(node.value);
+      } else {
+        text = String(node.value);
+      }
+      await navigator.clipboard.writeText(text);
+    } catch (err) {
+      console.error('Failed to copy value:', err);
+    }
+  };
+
   return (
     <div className="tree-node">
       <div 
@@ -193,6 +210,17 @@ function TreeNodeComponent({
         <span className="node-summary" title={getNodeSummary()}>
           {getNodeSummary()}
         </span>
+
+        <div className="node-actions" aria-label="Node actions">
+          <button
+            className="copy-btn"
+            title="Copy value"
+            aria-label="Copy value"
+            onClick={handleCopyValue}
+          >
+            ⧉
+          </button>
+        </div>
       </div>
       
       {hasChildren && node.expanded && (

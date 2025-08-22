@@ -4,7 +4,7 @@ import { getNodeSummary } from '../utils/tree';
 import { copyToClipboard } from '../utils/storage';
 
 interface TreeViewProps {
-  tree: TreeNode;
+  tree: TreeNode | null;
   onToggleExpand: (path: string[]) => void;
 }
 

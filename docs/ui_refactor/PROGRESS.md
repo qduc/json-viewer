@@ -2,17 +2,17 @@
 
 ## Current Status
 - **Phase:** In Progress
-- **Active Epic:** Epic 3
+- **Active Epic:** Epic 5
 - **Last Updated:** 2025-08-22
-- **Next AI Should:** Proceed to Epic 3, Task 9 (Tree Controls Expand/Collapse All)
+- **Next AI Should:** Quick QA pass and finalize Epic 4 status (adjust counts if needed)
 
 ## Progress Overview
 ```
 Epic 1: AppShell & Layout        [✅] 5/5 tasks (100% COMPLETE)
 Epic 2: Editor Simplification    [✅] 3/3 tasks (100% COMPLETE)
-Epic 3: Tree Explorer           [ ] 0/2 tasks (0%)
-Epic 4: Simple Search           [ ] 0/2 tasks (0%)
-Epic 5: Copy & Export           [ ] 0/2 tasks (0%)
+Epic 3: Tree Explorer           [✅] 2/2 tasks (100% COMPLETE)
+Epic 4: Simple Search           [⏳] 1/2 tasks (50%)
+Epic 5: Copy & Export           [✅] 2/2 tasks (100% COMPLETE)
 ```
 
 ## Task Completion Status
@@ -67,45 +67,45 @@ Epic 5: Copy & Export           [ ] 0/2 tasks (0%)
   - Dependencies: Task 1
   - Notes: Expandable JSON tree. Created full TreeView component with TreeNode interface, expand/collapse functionality, type visualization, accessibility features, and integrated with ViewSwitcher for editor/tree mode switching.
 
-### Epic 3: Tree Explorer (0/2 complete)
-- [ ] **Task 9:** Tree Controls Expand/Collapse All (1 pt)
-  - Status: Not Started
-  - Files: `src/components/Tree/TreeControls.tsx`
+### Epic 3: Tree Explorer (2/2 COMPLETE)
+- [✅] **Task 9:** Tree Controls Expand/Collapse All (1 pt)
+  - Status: Completed
+  - Files: `src/components/Tree/TreeControls.tsx`, `src/App.tsx`
   - Dependencies: Task 8
-  - Notes: Simple buttons
+  - Notes: Added `TreeControls` with Expand/Collapse All; integrated tree state in `App.tsx` using utils `buildTree`, `expandAll`, `collapseAll`, and wired `onToggleExpand`.
 
-- [ ] **Task 10:** Node Actions copy value (1 pt)
-  - Status: Not Started
-  - Files: `src/components/Tree/NodeRow.tsx`
+- [✅] **Task 10:** Node Actions copy value (1 pt)
+  - Status: Completed
+  - Files: `src/components/Tree/TreeView.tsx`
   - Dependencies: Task 8
-  - Notes: Right-click or hover menu
+  - Notes: Added hover action button to copy node value (uses `navigator.clipboard`). Copies JSON for objects/arrays and raw value for primitives.
 
-### Epic 4: Simple Search (0/2 complete)
-- [ ] **Task 11:** Tree Search simple filter (2 pts)
-  - Status: Not Started
-  - Files: `src/components/Tree/SimpleSearch.tsx`
+### Epic 4: Simple Search (1/2 complete)
+- [✅] **Task 11:** Tree Search simple filter (2 pts)
+  - Status: Completed
+  - Files: `src/components/Tree/SimpleSearch.tsx`, `src/App.tsx`
   - Dependencies: Task 8
-  - Notes: Basic text filter
+  - Notes: Basic text filter added; integrated with utils/filterTree, highlights matches and hides non-matching branches.
 
-### Epic 5: Copy & Export (0/2 complete)
-- [ ] **Task 12:** Copy Button copy JSON (1 pt)
-  - Status: Not Started
-  - Files: `src/components/Toolbar/CopyButton.tsx`
+### Epic 5: Copy & Export (2/2 COMPLETE)
+- [✅] **Task 12:** Copy Button copy JSON (1 pt)
+  - Status: Completed
+  - Files: `src/components/Toolbar/CopyButton.tsx`, `src/App.tsx`
   - Dependencies: Task 5
-  - Notes: Copy to clipboard
+  - Notes: Added CopyButton to Toolbar; copies formatted JSON based on selected format (2/4 spaces, tabs, minify). Disabled when JSON is invalid or empty. Shows 'Copied!' feedback briefly.
 
-- [ ] **Task 13:** Download Button save file (1 pt)
-  - Status: Not Started
-  - Files: `src/components/Toolbar/DownloadButton.tsx`
+- [✅] **Task 13:** Download Button save file (1 pt)
+  - Status: Completed
+  - Files: `src/components/Toolbar/DownloadButton.tsx`, `src/App.tsx`
   - Dependencies: Task 5
-  - Notes: Save as .json file
+  - Notes: Added DownloadButton to Toolbar; downloads formatted JSON as a .json file. Disabled when JSON is invalid or empty. Shows brief 'Saved!' feedback.
 
 ## Current Working Branch
 - **Branch:** Not created yet
-- **Next AI Should:** Create `git checkout -b feature/simplified-ui`
+- **Next AI Should:** Quick QA pass and finalize Epic 4 status (adjust counts if needed)
 
 ## Files Created/Modified
-- Modified: `src/App.tsx` (Tasks 1, 2, 3, 5, 6, 7 & 8)
+- Modified: `src/App.tsx` (Tasks 1, 2, 3, 5, 6, 7, 8, 12 & 13)
 - Modified: `src/App.css` (Task 7)
 - Existing: `src/components/Layout/SplitPane.tsx` (integrated in Task 2)
 - Added: `src/components/Layout/ViewSwitcher.tsx` (Task 3)
@@ -113,18 +113,21 @@ Epic 5: Copy & Export           [ ] 0/2 tasks (0%)
 - Added: `src/components/TopBar/ValidationError.tsx` (Task 7)
 - Added: `src/components/Toolbar/Toolbar.tsx` (Task 5)
 - Added: `src/components/Toolbar/FormatMenu.tsx` (Task 6)
+- Added: `src/components/Toolbar/CopyButton.tsx` (Task 12)
+- Added: `src/components/Toolbar/DownloadButton.tsx` (Task 13)
 - Added: `src/components/Tree/TreeView.tsx` (Task 8)
 - Added: `src/hooks/useValidation.ts` (Task 7)
+- Added: `src/components/Tree/SimpleSearch.tsx` (Task 11)
+- Modified: `src/components/TreeView.tsx` (to accept nullable tree)
 
 ## Blockers/Issues
 *None currently*
 
 ## Notes for Next AI
 - **Read WORK_UNITS.md first** - understand session boundaries
-- Proceed with Task 6 (FormatMenu Beautify/Minify in Epic 2)
-- The basic Toolbar container is now ready for format/copy buttons
-- Epic 1 (AppShell layout) is now COMPLETE! 🎉
-- Moving on to Epic 2 (Editor Simplification)
+- Proceed with Epic 5, Task 13 (Download Button save file)
+- Tree node hover actions now include Copy; consider reusing styles for future actions
+- Epic 1 and 2 are COMPLETE; Epic 3 COMPLETE; Epic 4 Task 11 COMPLETE
 - Check existing codebase patterns before starting
 - Follow mobile-first responsive design
 - Keep components simple - this is a utility app

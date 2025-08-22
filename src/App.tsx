@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import './App.css';
 import { SplitPane } from './components/Layout/SplitPane';
 import { ViewSwitcher } from './components/Layout/ViewSwitcher';
@@ -6,8 +6,13 @@ import StatusPill from './components/TopBar/StatusPill';
 import { ValidationErrors } from './components/TopBar/ValidationError';
 import Toolbar from './components/Toolbar/Toolbar';
 import FormatMenu, { type FormatType } from './components/Toolbar/FormatMenu';
+import CopyButton from './components/Toolbar/CopyButton';
+import DownloadButton from './components/Toolbar/DownloadButton';
 import { useValidation } from './hooks/useValidation';
-import TreeView from './components/Tree/TreeView';
+import TreeView from './components/TreeView';
+import TreeControls from './components/Tree/TreeControls';
+import SimpleSearch from './components/Tree/SimpleSearch';
+import { buildTree, expandAll, collapseAll, filterTree, type TreeNode } from './utils/tree';
 
 type ViewMode = 'editor' | 'tree';
 
@@ -27,15 +32,61 @@ function App() {
   // Use validation hook
   const validation = useValidation(text);
 
-  // Parse JSON data for tree view
-  let parsedData = null;
-  try {
-    if (validation.valid) {
-      parsedData = JSON.parse(text);
+  // Tree state derived from editor text
+  const [tree, setTree] = useState<TreeNode | null>(null);
+
+  // Simple search text for tree filtering
+  const [searchText, setSearchText] = useState<string>('');
+
+  // Build tree whenever valid JSON changes
+  useEffect(() => {
+    try {
+      if (validation.valid) {
+        const parsed = JSON.parse(text);
+        setTree(buildTree(parsed));
+      } else {
+        setTree(null);
+      }
+    } catch {
+      setTree(null);
     }
-  } catch (e) {
-    // Invalid JSON, parsedData stays null
-  }
+  }, [text, validation.valid]);
+
+  const toggleExpandAtPath = (root: TreeNode, path: string[], idx: number = 0): TreeNode => {
+    const clone: TreeNode = { ...root };
+    if (idx >= path.length) {
+      clone.isExpanded = !clone.isExpanded;
+      return clone;
+    }
+    if (!clone.children) return clone;
+    const segment = path[idx];
+    clone.children = clone.children.map((child) =>
+      child.path[idx] === segment ? toggleExpandAtPath(child, path, idx + 1) : child
+    );
+    return clone;
+  };
+
+  const handleToggleExpand = (path: string[]) => {
+    if (!tree) return;
+    setTree(toggleExpandAtPath(tree, path));
+  };
+
+  const handleExpandAll = () => {
+    if (!tree) return;
+    setTree(expandAll(tree));
+  };
+
+  const handleCollapseAll = () => {
+    if (!tree) return;
+    setTree(collapseAll(tree));
+  };
+
+  // Derive filtered tree according to search text (simple contains)
+  const filteredTree: TreeNode | null = ((): TreeNode | null => {
+    if (!tree) return null;
+    if (!searchText) return tree;
+    return filterTree(tree, searchText);
+  })();
 
   // Format JSON based on selected format type
   const handleFormat = () => {
@@ -66,6 +117,29 @@ function App() {
       console.error('Cannot format invalid JSON:', e);
     }
   };
+
+  const formattedForCopy = useMemo(() => {
+    if (!validation.valid) return '';
+    try {
+      const parsed = JSON.parse(text);
+      switch (formatType) {
+        case '2-spaces':
+          return JSON.stringify(parsed, null, 2);
+        case '4-spaces':
+          return JSON.stringify(parsed, null, 4);
+        case 'tabs':
+          return JSON.stringify(parsed, null, '\t');
+        case 'minify':
+          return JSON.stringify(parsed);
+        default:
+          return JSON.stringify(parsed, null, 2);
+      }
+    } catch {
+      return '';
+    }
+  }, [text, formatType, validation.valid]);
+
+  const copyDisabled = !validation.valid || text.trim().length === 0;
 
   return (
     <div className="app">
@@ -99,6 +173,8 @@ function App() {
                     onChange={setFormatType}
                     onFormat={handleFormat}
                   />
+                  <CopyButton value={formattedForCopy} disabled={copyDisabled} />
+                  <DownloadButton value={formattedForCopy} disabled={copyDisabled} />
                 </Toolbar>
                 
                 <div className="editor-pane">
@@ -138,11 +214,15 @@ function App() {
                 <h3>Tree View</h3>
               </div>
               <div className="tree-content-wrapper">
-                <TreeView 
-                  data={parsedData}
-                  onNodeSelect={(node) => {
-                    console.log('Selected node:', node);
-                  }}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                  <TreeControls onExpandAll={handleExpandAll} onCollapseAll={handleCollapseAll} />
+                  <div style={{ flex: 1 }}>
+                    <SimpleSearch value={searchText} onChange={setSearchText} />
+                  </div>
+                </div>
+                <TreeView
+                  tree={filteredTree}
+                  onToggleExpand={handleToggleExpand}
                 />
               </div>
             </section>
