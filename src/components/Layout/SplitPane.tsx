@@ -10,7 +10,7 @@ export function SplitPane({ children }: SplitPaneProps) {
   return (
     <PanelGroup direction="horizontal">
       <Panel>{children[0]}</Panel>
-      <PanelResizeHandle style={{ width: '4px', background: '#ccc' }} />
+      <PanelResizeHandle className="panel-handle" />
       <Panel>{children[1]}</Panel>
     </PanelGroup>
   );

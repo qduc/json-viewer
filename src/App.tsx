@@ -15,6 +15,8 @@ import TreeControls from './components/Tree/TreeControls';
 import SimpleSearch from './components/Tree/SimpleSearch';
 import { buildTree, expandAll, collapseAll, filterTree, type TreeNode } from './utils/tree';
 import OutputTabs from './components/OutputTabs';
+import ThemeToggle from './components/ThemeToggle';
+import { useSettings } from './hooks/useSettings';
 
 type ViewMode = 'editor' | 'tree';
 
@@ -33,6 +35,9 @@ function App() {
 
   // Use validation hook
   const validation = useValidation(text);
+
+  // App-wide settings (theme, etc.)
+  const { settings, updateSettings, effectiveTheme } = useSettings();
 
   // Tree state derived from editor text
   const [tree, setTree] = useState<TreeNode | null>(null);
@@ -157,6 +162,15 @@ function App() {
         <div className="toolbar-section" aria-label="Validation status">
           <StatusPill validation={validation.result} />
         </div>
+
+        {/* Theme toggle */}
+        <div className="toolbar-section" aria-label="Theme toggle">
+          <ThemeToggle
+            theme={settings.theme}
+            onThemeChange={(t) => updateSettings({ theme: t })}
+            effectiveTheme={effectiveTheme}
+          />
+        </div>
       </header>
 
       <main className="app-main">
@@ -183,7 +197,7 @@ function App() {
                   value={text}
                   onChange={setText}
                   validation={validation.result}
-                  theme={'light'}
+                  theme={effectiveTheme}
                   fontSize={14}
                 />
 
