@@ -148,37 +148,41 @@ function App() {
   const copyDisabled = !validation.valid || text.trim().length === 0;
 
   return (
-    <div className="h-screen flex flex-col">
-      <header className="flex justify-between items-center px-6 py-2 min-h-[48px]" style={{ background: 'linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0)), var(--bg-secondary)', borderBottom: '1px solid var(--border-color)', boxShadow: 'var(--shadow)' }}>
-        <h1 className="m-0 text-xl font-semibold leading-tight">🧩 JSON Viewer</h1>
-        {/* ViewSwitcher (Task 3) */}
-        <div className="flex items-center gap-2" aria-label="View switcher">
-          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>View:</span>
-          <ViewSwitcher value={viewMode} onChange={setViewMode} />
-        </div>
+    <div className="h-screen flex flex-col bg-[var(--bg-primary)]">
+      {/* App Header */}
+      <header className="sticky top-0 z-30 border-b [background:linear-gradient(180deg,rgba(0,0,0,0.02),rgba(0,0,0,0)),var(--bg-secondary)] [box-shadow:var(--shadow)]">
+        <div className="max-w-7xl mx-auto w-full px-6 py-2 min-h-[48px] grid grid-cols-[1fr_auto_1fr] items-center gap-4">
+          <h1 className="m-0 text-xl font-semibold leading-tight">🧩 JSON Viewer</h1>
 
-        {/* Status indicator (Task 4) */}
-        <div className="flex items-center gap-2" aria-label="Validation status">
-          <StatusPill validation={validation.result} />
-        </div>
+          {/* View switcher (center) */}
+          <div className="flex items-center justify-center gap-2" aria-label="View switcher">
+            <span className="text-xs tracking-wide uppercase text-[var(--text-secondary)]">View</span>
+            <ViewSwitcher value={viewMode} onChange={setViewMode} />
+          </div>
 
-        {/* Theme toggle */}
-        <div className="flex items-center gap-2" aria-label="Theme toggle">
-          <ThemeToggle
-            theme={settings.theme}
-            onThemeChange={(t) => updateSettings({ theme: t })}
-            effectiveTheme={effectiveTheme}
-          />
+          {/* Right cluster: status + theme */}
+          <div className="flex items-center gap-3 justify-end">
+            <div className="flex items-center gap-2" aria-label="Validation status">
+              <StatusPill validation={validation.result} />
+            </div>
+            <div className="flex items-center gap-2" aria-label="Theme toggle">
+              <ThemeToggle
+                theme={settings.theme}
+                onThemeChange={(t) => updateSettings({ theme: t })}
+                effectiveTheme={effectiveTheme}
+              />
+            </div>
+          </div>
         </div>
       </header>
 
       <main className="flex-1 flex flex-col overflow-hidden">
-        <div className="p-3 h-full">
+        <div className="max-w-7xl mx-auto w-full p-3 h-full">
           {/* Main split: left is Editor, right is contextual Output / Tree */}
           <SplitPane>
             {/* Left: Editor */}
             <section className="flex flex-col h-full">
-              <h3>Editor</h3>
+              <h3 className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-secondary)]">Editor</h3>
 
               {/* Basic Toolbar container (Task 5) */}
               <Toolbar>
@@ -200,7 +204,7 @@ function App() {
               />
 
               {/* Validation status and inline errors */}
-              <div className="mt-2 text-xs" style={{ color: 'var(--text-secondary)' }}>
+              <div className="mt-2 text-xs text-[var(--text-secondary)]">
                 {validation.valid ? 'Valid JSON' : 'Invalid JSON'} • {validation.lineCount} lines
               </div>
 
@@ -213,7 +217,9 @@ function App() {
             {/* Right: Output or Tree (contextual) */}
             <section className="flex flex-col h-full">
               <div className="flex items-center justify-between mb-3">
-                <h3>{viewMode === 'editor' ? 'Output' : 'Tree View'}</h3>
+                <h3 className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
+                  {viewMode === 'editor' ? 'Output' : 'Tree View'}
+                </h3>
 
                 {/* When in tree view, show tree controls inside a toolbar in the right pane */}
                 {viewMode === 'tree' && (
@@ -228,7 +234,7 @@ function App() {
                 )}
               </div>
 
-              <div className="flex-1 flex flex-col min-h-0">
+              <div className="flex-1 flex flex-col min-h-0 rounded-lg border border-[var(--border-color)] bg-[var(--bg-primary)] shadow-sm">
                 {viewMode === 'editor' ? (
                   <OutputTabs inputText={text} indentSize={formatType === 'tabs' ? '\t' : formatType === '4-spaces' ? 4 : 2} />
                 ) : (

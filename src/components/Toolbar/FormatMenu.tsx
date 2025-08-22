@@ -69,15 +69,17 @@ export function FormatMenu({ value, onChange, onFormat }: FormatMenuProps) {
         </div>
       </details>
 
-      <button
-        className="px-4 py-2 border border-[var(--accent-color)] rounded bg-[var(--accent-color)] text-white font-semibold transition-all hover:opacity-90 hover:-translate-y-px [box-shadow:var(--shadow)] hover:[box-shadow:var(--shadow)]"
+      <Button
+        variant="primary"
+        size="sm"
         onClick={onFormat}
         title="Apply selected formatting"
       >
         Apply Format
-      </button>
+      </Button>
     </div>
   );
 }
 
+import Button from '../ui/Button';
 export default FormatMenu;
