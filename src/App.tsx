@@ -1,272 +1,153 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
-import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels';
-import EditorPane from './components/EditorPane';
-import TreeView from './components/TreeView';
-import OutputTabs from './components/OutputTabs';
-import Toolbar from './components/Toolbar';
-import SearchBar from './components/SearchBar';
-import ThemeToggle from './components/ThemeToggle';
-import { useSettings } from './hooks/useSettings';
-import { useDebounce, useKeyboardShortcuts } from './hooks/useKeyboard';
-import { validateJson, beautifyJson, minifyJson, escapeJsonString, unescapeJsonString } from './utils/json';
-import { buildTree, filterTree, expandAll, collapseAll, expandToLevel, findMatches } from './utils/tree';
-import { readFileAsText } from './utils/download';
-import JsonWorker from './workers/jsonWorker';
+import { useState } from 'react';
 import './App.css';
+import { SplitPane } from './components/Layout/SplitPane';
+import { ViewSwitcher } from './components/Layout/ViewSwitcher';
+import StatusPill from './components/TopBar/StatusPill';
+import { ValidationErrors } from './components/TopBar/ValidationError';
+import Toolbar from './components/Toolbar/Toolbar';
+import FormatMenu, { type FormatType } from './components/Toolbar/FormatMenu';
+import { useValidation } from './hooks/useValidation';
+import TreeView from './components/Tree/TreeView';
+
+type ViewMode = 'editor' | 'tree';
+
 
 function App() {
-  const { settings, updateSettings, effectiveTheme } = useSettings();
-  const [inputText, setInputText] = useState(settings.lastInput || '{"hello": "world", "array": [1, 2, 3], "nested": {"key": "value"}}');
-  const [searchText, setSearchText] = useState('');
-  const [isRegex, setIsRegex] = useState(false);
-  const [currentMatchIndex, setCurrentMatchIndex] = useState(0);
-  
-  const debouncedInput = useDebounce(inputText, 300);
-  const debouncedSearch = useDebounce(searchText, 200);
-  
-  const workerRef = useRef<JsonWorker | null>(null);
-  const searchBarRef = useRef<HTMLDivElement>(null);
-  
-  // Initialize worker
-  useEffect(() => {
-    workerRef.current = new JsonWorker();
-    return () => {
-      workerRef.current?.destroy();
-    };
-  }, []);
+  // View mode (controlled by ViewSwitcher)
+  const [viewMode, setViewMode] = useState<ViewMode>('editor');
 
-  // Validate JSON
-  const validation = useMemo(() => {
-    return validateJson(debouncedInput);
-  }, [debouncedInput]);
+  // Minimal editor state for skeleton
+  const [text, setText] = useState<string>(
+    '{\n  "hello": "world",\n  "array": [1, 2, 3]\n}'
+  );
 
-  // Build tree from validated JSON
-  const tree = useMemo(() => {
-    if (validation.isValid && validation.parsed !== undefined) {
-      return buildTree(validation.parsed);
+  // Format options state
+  const [formatType, setFormatType] = useState<FormatType>('2-spaces');
+
+  // Use validation hook
+  const validation = useValidation(text);
+
+  // Parse JSON data for tree view
+  let parsedData = null;
+  try {
+    if (validation.valid) {
+      parsedData = JSON.parse(text);
     }
-    return null;
-  }, [validation]);
+  } catch (e) {
+    // Invalid JSON, parsedData stays null
+  }
 
-  // Filter tree based on search
-  const filteredTree = useMemo(() => {
-    if (!tree) return null;
-    return filterTree(tree, debouncedSearch, isRegex);
-  }, [tree, debouncedSearch, isRegex]);
-
-  // Find matches for navigation
-  const matches = useMemo(() => {
-    if (!filteredTree || !debouncedSearch) return [];
-    return findMatches(filteredTree);
-  }, [filteredTree, debouncedSearch]);
-
-  // Save input to localStorage (debounced)
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      updateSettings({ lastInput: inputText });
-    }, 1000); // Save after 1 second of no changes
-
-    return () => clearTimeout(timeoutId);
-  }, [inputText]); // Remove updateSettings dependency to avoid infinite loop
-
-  // Keyboard shortcuts
-  useKeyboardShortcuts({
-    validate: () => validateJson(inputText),
-    beautify: () => handleBeautify(),
-    minify: () => handleMinify(),
-    expandAll: () => handleExpandAll(),
-    collapseAll: () => handleCollapseAll(),
-    focusFilter: () => searchBarRef.current?.querySelector('input')?.focus(),
-    clearFilter: () => setSearchText('')
-  });
-
-  const handleInputChange = (value: string) => {
-    setInputText(value);
-  };
-
-  const handleBeautify = () => {
-    const beautified = beautifyJson(inputText, settings.indentSize);
-    setInputText(beautified);
-  };
-
-  const handleMinify = () => {
-    const minified = minifyJson(inputText);
-    setInputText(minified);
-  };
-
-  const handleEscape = () => {
-    const escaped = escapeJsonString(inputText);
-    setInputText(escaped);
-  };
-
-  const handleUnescape = () => {
-    const result = unescapeJsonString(inputText);
-    if (result.result) {
-      setInputText(result.result);
-    }
-  };
-
-  const handleFileUpload = async (file: File) => {
+  // Format JSON based on selected format type
+  const handleFormat = () => {
     try {
-      const content = await readFileAsText(file);
-      setInputText(content);
-    } catch (error) {
-      console.error('Failed to read file:', error);
-    }
-  };
+      const parsed = JSON.parse(text);
+      let formatted: string;
 
-  const [treeState, setTreeState] = useState(filteredTree);
-
-  useEffect(() => {
-    setTreeState(filteredTree);
-  }, [filteredTree]);
-
-  const handleToggleExpand = (path: string[]) => {
-    if (!treeState) return;
-    
-    const updateNode = (node: any): any => {
-      if (JSON.stringify(node.path) === JSON.stringify(path)) {
-        return { ...node, isExpanded: !node.isExpanded };
+      switch (formatType) {
+        case '2-spaces':
+          formatted = JSON.stringify(parsed, null, 2);
+          break;
+        case '4-spaces':
+          formatted = JSON.stringify(parsed, null, 4);
+          break;
+        case 'tabs':
+          formatted = JSON.stringify(parsed, null, '\t');
+          break;
+        case 'minify':
+          formatted = JSON.stringify(parsed);
+          break;
+        default:
+          formatted = JSON.stringify(parsed, null, 2);
       }
-      if (node.children) {
-        return {
-          ...node,
-          children: node.children.map(updateNode)
-        };
-      }
-      return node;
-    };
-    
-    setTreeState(updateNode(treeState));
-  };
 
-  const handleExpandAll = () => {
-    if (treeState) {
-      setTreeState(expandAll(treeState));
-    }
-  };
-
-  const handleCollapseAll = () => {
-    if (treeState) {
-      setTreeState(collapseAll(treeState));
-    }
-  };
-
-  const handleExpandToLevel = (level: number) => {
-    if (treeState) {
-      setTreeState(expandToLevel(treeState, level));
-    }
-  };
-
-  const handleNextMatch = () => {
-    if (matches.length > 0) {
-      setCurrentMatchIndex((prev) => (prev + 1) % matches.length);
-    }
-  };
-
-  const handlePrevMatch = () => {
-    if (matches.length > 0) {
-      setCurrentMatchIndex((prev) => (prev - 1 + matches.length) % matches.length);
+      setText(formatted);
+    } catch (e) {
+      // If JSON is invalid, don't format (validation will show the error)
+      console.error('Cannot format invalid JSON:', e);
     }
   };
 
   return (
-    <div className="app" data-theme={effectiveTheme}>
+    <div className="app">
       <header className="app-header">
-        <h1>🧩 JSON Formatter & Explorer</h1>
-        <ThemeToggle
-          theme={settings.theme}
-          onThemeChange={(theme) => updateSettings({ theme })}
-          effectiveTheme={effectiveTheme}
-        />
+        <h1>🧩 JSON Viewer</h1>
+        {/* ViewSwitcher (Task 3) */}
+        <div className="toolbar-section" aria-label="View switcher">
+          <span style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>View:</span>
+          <ViewSwitcher value={viewMode} onChange={setViewMode} />
+        </div>
+
+        {/* Status indicator (Task 4) */}
+        <div className="toolbar-section" aria-label="Validation status">
+          <StatusPill validation={validation.result} />
+        </div>
       </header>
 
       <main className="app-main">
-        <Toolbar
-          validation={validation}
-          onValidate={() => validateJson(inputText)}
-          onBeautify={handleBeautify}
-          onMinify={handleMinify}
-          onExpandAll={handleExpandAll}
-          onCollapseAll={handleCollapseAll}
-          onExpandToLevel={handleExpandToLevel}
-          onEscape={handleEscape}
-          onUnescape={handleUnescape}
-          onFileUpload={handleFileUpload}
-          indentSize={settings.indentSize}
-          onIndentSizeChange={(indentSize) => updateSettings({ indentSize })}
-        />
+        <div style={{ padding: '0.75rem', height: '100%' }}>
+          {viewMode === 'editor' ? (
+            /* Editor View */
+            <SplitPane>
+              {/* Left: Editor */}
+              <section className="editor-panel">
+                <h3>Editor</h3>
+                
+                {/* Basic Toolbar container (Task 5) */}
+                <Toolbar>
+                  <FormatMenu
+                    value={formatType}
+                    onChange={setFormatType}
+                    onFormat={handleFormat}
+                  />
+                </Toolbar>
+                
+                <div className="editor-pane">
+                  <textarea
+                    className="fallback-textarea"
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
+                    aria-label="JSON editor"
+                  />
+                </div>
+                
+                {/* Validation status and inline errors */}
+                <div style={{ marginTop: 8, fontSize: 12, color: 'var(--text-secondary)' }}>
+                  {validation.valid ? 'Valid JSON' : 'Invalid JSON'} • {validation.lineCount} lines
+                </div>
+                
+                {/* Inline validation errors */}
+                {!validation.valid && validation.errors.length > 0 && (
+                  <ValidationErrors errors={validation.errors} className="editor-validation-errors" />
+                )}
+              </section>
 
-        <PanelGroup direction="horizontal" className="panel-group">
-          <Panel defaultSize={50} minSize={30}>
-            <div className="editor-panel">
-              <h3>Editor</h3>
-              <EditorPane
-                value={inputText}
-                onChange={handleInputChange}
-                validation={validation}
-                theme={effectiveTheme}
-                fontSize={settings.editorFontSize}
-              />
-            </div>
-          </Panel>
-          
-          <PanelResizeHandle className="panel-handle" />
-          
-          <Panel defaultSize={50} minSize={30}>
-            <div className="output-panel">
-              <PanelGroup direction="vertical" className="output-panel-group">
-                <Panel defaultSize={60} minSize={30} className="output-section">
-                  <div className="output-tabs-container">
-                    <div className="panel-header">
-                      <h3>Formatted Output</h3>
-                    </div>
-                    <OutputTabs 
-                      inputText={inputText}
-                      indentSize={settings.indentSize}
-                    />
-                  </div>
-                </Panel>
-                
-                <PanelResizeHandle className="output-panel-handle" />
-                
-                <Panel defaultSize={40} minSize={20} className="tree-section">
-                  <div className="tree-container">
-                    <div className="panel-header">
-                      <h3>Tree Explorer</h3>
-                      <div ref={searchBarRef}>
-                        <SearchBar
-                          searchText={searchText}
-                          onSearchChange={setSearchText}
-                          isRegex={isRegex}
-                          onRegexToggle={() => setIsRegex(!isRegex)}
-                          matchCount={matches.length}
-                          currentMatch={currentMatchIndex}
-                          onNextMatch={handleNextMatch}
-                          onPrevMatch={handlePrevMatch}
-                          onClear={() => setSearchText('')}
-                        />
-                      </div>
-                    </div>
-                    
-                    <div className="tree-content-wrapper">
-                      {treeState ? (
-                        <TreeView
-                          tree={treeState}
-                          onToggleExpand={handleToggleExpand}
-                        />
-                      ) : (
-                        <div className="tree-empty-state">
-                          <p>Enter valid JSON to see the tree structure</p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </Panel>
-              </PanelGroup>
-            </div>
-          </Panel>
-        </PanelGroup>
+              {/* Right: Output panel placeholder */}
+              <section className="output-panel">
+                <div className="panel-header">
+                  <h3>Output (placeholder)</h3>
+                </div>
+                <div className="tree-empty-state">
+                  <p>Output panels will appear here</p>
+                </div>
+              </section>
+            </SplitPane>
+          ) : (
+            /* Tree View */
+            <section className="tree-container">
+              <div className="panel-header">
+                <h3>Tree View</h3>
+              </div>
+              <div className="tree-content-wrapper">
+                <TreeView 
+                  data={parsedData}
+                  onNodeSelect={(node) => {
+                    console.log('Selected node:', node);
+                  }}
+                />
+              </div>
+            </section>
+          )}
+        </div>
       </main>
     </div>
   );

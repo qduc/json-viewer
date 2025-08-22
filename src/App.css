@@ -281,6 +281,42 @@ body {
   font-size: 0.75rem;
 }
 
+/* Inline validation errors */
+.validation-errors {
+  margin-top: 0.5rem;
+}
+
+.validation-error {
+  background-color: var(--error-color);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+  border-left: 4px solid rgba(255, 255, 255, 0.3);
+}
+
+.validation-error:last-child {
+  margin-bottom: 0;
+}
+
+.validation-error .error-message {
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.validation-error .error-location {
+  font-size: 0.75rem;
+  opacity: 0.9;
+  color: inherit;
+}
+
+.editor-validation-errors {
+  margin-top: 0.5rem;
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
 /* File upload */
 .file-upload-btn {
   cursor: pointer;
