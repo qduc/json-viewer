@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import './App.css';
 import { SplitPane } from './components/Layout/SplitPane';
+import EditorPane from './components/EditorPane';
 import { ViewSwitcher } from './components/Layout/ViewSwitcher';
 import StatusPill from './components/TopBar/StatusPill';
 import { ValidationErrors } from './components/TopBar/ValidationError';
@@ -13,6 +14,7 @@ import TreeView from './components/TreeView';
 import TreeControls from './components/Tree/TreeControls';
 import SimpleSearch from './components/Tree/SimpleSearch';
 import { buildTree, expandAll, collapseAll, filterTree, type TreeNode } from './utils/tree';
+import OutputTabs from './components/OutputTabs';
 
 type ViewMode = 'editor' | 'tree';
 
@@ -165,7 +167,7 @@ function App() {
               {/* Left: Editor */}
               <section className="editor-panel">
                 <h3>Editor</h3>
-                
+
                 {/* Basic Toolbar container (Task 5) */}
                 <Toolbar>
                   <FormatMenu
@@ -176,34 +178,33 @@ function App() {
                   <CopyButton value={formattedForCopy} disabled={copyDisabled} />
                   <DownloadButton value={formattedForCopy} disabled={copyDisabled} />
                 </Toolbar>
-                
-                <div className="editor-pane">
-                  <textarea
-                    className="fallback-textarea"
-                    value={text}
-                    onChange={(e) => setText(e.target.value)}
-                    aria-label="JSON editor"
-                  />
-                </div>
-                
+
+                <EditorPane
+                  value={text}
+                  onChange={setText}
+                  validation={validation.result}
+                  theme={'light'}
+                  fontSize={14}
+                />
+
                 {/* Validation status and inline errors */}
                 <div style={{ marginTop: 8, fontSize: 12, color: 'var(--text-secondary)' }}>
                   {validation.valid ? 'Valid JSON' : 'Invalid JSON'} • {validation.lineCount} lines
                 </div>
-                
+
                 {/* Inline validation errors */}
                 {!validation.valid && validation.errors.length > 0 && (
                   <ValidationErrors errors={validation.errors} className="editor-validation-errors" />
                 )}
               </section>
 
-              {/* Right: Output panel placeholder */}
+              {/* Right: Output panel */}
               <section className="output-panel">
                 <div className="panel-header">
-                  <h3>Output (placeholder)</h3>
+                  <h3>Output</h3>
                 </div>
-                <div className="tree-empty-state">
-                  <p>Output panels will appear here</p>
+                <div className="output-tabs-container">
+                  <OutputTabs inputText={text} indentSize={formatType === 'tabs' ? '\t' : formatType === '4-spaces' ? 4 : 2} />
                 </div>
               </section>
             </SplitPane>

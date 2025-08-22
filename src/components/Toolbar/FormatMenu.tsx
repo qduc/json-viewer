@@ -1,4 +1,6 @@
 
+import { useEffect, useRef } from 'react';
+
 export type FormatType = '2-spaces' | '4-spaces' | 'tabs' | 'minify';
 
 interface FormatMenuProps {
@@ -16,10 +18,35 @@ const formatOptions = [
 
 export function FormatMenu({ value, onChange, onFormat }: FormatMenuProps) {
   const selectedOption = formatOptions.find(option => option.value === value);
+  const detailsRef = useRef<HTMLDetailsElement | null>(null);
+
+  useEffect(() => {
+    function handleDocumentClick(e: MouseEvent) {
+      const details = detailsRef.current;
+      if (!details || !details.open) return;
+      const target = e.target as Node | null;
+      if (target && !details.contains(target)) {
+        details.open = false;
+      }
+    }
+
+    function handleKeyDown(e: KeyboardEvent) {
+      const details = detailsRef.current;
+      if (!details || !details.open) return;
+      if (e.key === 'Escape') details.open = false;
+    }
+
+    document.addEventListener('click', handleDocumentClick);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('click', handleDocumentClick);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   return (
     <div className="toolbar-group">
-      <details className="dropdown">
+      <details ref={detailsRef} className="dropdown">
         <summary className="dropdown-toggle" title="Format JSON">
           Format: {selectedOption?.label}
         </summary>
@@ -30,8 +57,8 @@ export function FormatMenu({ value, onChange, onFormat }: FormatMenuProps) {
               className="dropdown-item"
               onClick={() => {
                 onChange(option.value);
-                // Close the dropdown by removing focus
-                (document.activeElement as HTMLElement)?.blur();
+                // Close the details dropdown explicitly
+                if (detailsRef.current) detailsRef.current.open = false;
               }}
               aria-pressed={value === option.value}
             >
@@ -41,7 +68,7 @@ export function FormatMenu({ value, onChange, onFormat }: FormatMenuProps) {
           ))}
         </div>
       </details>
-      
+
       <button
         className="btn-primary"
         onClick={onFormat}
